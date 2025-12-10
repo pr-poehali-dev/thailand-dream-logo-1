@@ -7,7 +7,8 @@ export interface Property {
   id: number;
   title: string;
   location: string;
-  price: string;
+  pricePerDay: string;
+  pricePerMonth: string;
   type: string;
   bedrooms: number;
   bathrooms: number;
@@ -82,11 +83,14 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
         <div className="flex items-center justify-between pt-4 border-t">
           <div>
             <p className="text-xs text-muted-foreground">{property.type}</p>
-            <p className="text-xl font-bold text-primary">{property.price}</p>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-semibold text-primary">{property.pricePerDay}/сутки</p>
+              <p className="text-xs text-muted-foreground">{property.pricePerMonth}/месяц</p>
+            </div>
           </div>
           <Button size="sm" className="gap-2">
-            Подробнее
-            <Icon name="ArrowRight" size={16} />
+            Забронировать
+            <Icon name="Calendar" size={16} />
           </Button>
         </div>
       </CardContent>

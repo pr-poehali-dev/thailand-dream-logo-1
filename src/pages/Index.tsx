@@ -13,7 +13,8 @@ const mockProperties: Property[] = [
     id: 1,
     title: 'Люкс вилла у океана',
     location: 'Пхукет, Карон',
-    price: '₽45,000,000',
+    pricePerDay: '₽15,000',
+    pricePerMonth: '₽350,000',
     type: 'Вилла',
     bedrooms: 4,
     bathrooms: 3,
@@ -27,7 +28,8 @@ const mockProperties: Property[] = [
     id: 2,
     title: 'Современная квартира в центре',
     location: 'Бангкок, Сукхумвит',
-    price: '₽12,500,000',
+    pricePerDay: '₽4,500',
+    pricePerMonth: '₽95,000',
     type: 'Квартира',
     bedrooms: 2,
     bathrooms: 2,
@@ -41,7 +43,8 @@ const mockProperties: Property[] = [
     id: 3,
     title: 'Пентхаус с видом на море',
     location: 'Паттайя, Пратамнак',
-    price: '₽28,000,000',
+    pricePerDay: '₽9,500',
+    pricePerMonth: '₽220,000',
     type: 'Пентхаус',
     bedrooms: 3,
     bathrooms: 2,
@@ -54,7 +57,8 @@ const mockProperties: Property[] = [
     id: 4,
     title: 'Уютный дом в тропиках',
     location: 'Самуи, Чавенг',
-    price: '₽18,900,000',
+    pricePerDay: '₽6,500',
+    pricePerMonth: '₽145,000',
     type: 'Дом',
     bedrooms: 3,
     bathrooms: 2,
@@ -67,7 +71,8 @@ const mockProperties: Property[] = [
     id: 5,
     title: 'Студия рядом с пляжем',
     location: 'Пхукет, Патонг',
-    price: '₽5,500,000',
+    pricePerDay: '₽2,000',
+    pricePerMonth: '₽42,000',
     type: 'Студия',
     bedrooms: 1,
     bathrooms: 1,
@@ -80,7 +85,8 @@ const mockProperties: Property[] = [
     id: 6,
     title: 'Вилла с бассейном',
     location: 'Краби, Ао Нанг',
-    price: '₽32,000,000',
+    pricePerDay: '₽11,000',
+    pricePerMonth: '₽250,000',
     type: 'Вилла',
     bedrooms: 5,
     bathrooms: 4,
@@ -112,19 +118,19 @@ export default function Index() {
       const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         property.location.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = selectedType === 'Все' || property.type === selectedType;
-      const propertyPrice = parseInt(property.price.replace(/[^0-9]/g, ''));
+      const propertyPrice = parseInt(property.pricePerDay.replace(/[^0-9]/g, ''));
       const matchesPrice = propertyPrice >= priceRange[0] && propertyPrice <= priceRange[1];
       return matchesSearch && matchesType && matchesPrice;
     })
     .sort((a, b) => {
       if (sortOrder === 'price-asc') {
-        const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
-        const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
+        const priceA = parseInt(a.pricePerDay.replace(/[^0-9]/g, ''));
+        const priceB = parseInt(b.pricePerDay.replace(/[^0-9]/g, ''));
         return priceA - priceB;
       }
       if (sortOrder === 'price-desc') {
-        const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
-        const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
+        const priceA = parseInt(a.pricePerDay.replace(/[^0-9]/g, ''));
+        const priceB = parseInt(b.pricePerDay.replace(/[^0-9]/g, ''));
         return priceB - priceA;
       }
       return 0;
@@ -150,10 +156,10 @@ export default function Index() {
               🌴 Эксклюзивная недвижимость
             </Badge>
             <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-              Ваша мечта в Таиланде начинается здесь
+              Аренда вилл в Таиланде
             </h1>
             <p className="text-xl text-white/90">
-              Элитные виллы, апартаменты и дома у океана. Надёжная помощь в покупке недвижимости.
+              Элитные виллы, апартаменты и дома у океана. Посуточно и на длительный срок.
             </p>
             <div className="flex gap-4">
               <Button 
@@ -163,7 +169,7 @@ export default function Index() {
                 onClick={() => setCurrentPage('properties')}
               >
                 <Icon name="Search" size={20} />
-                Смотреть объекты
+                Подобрать виллу
               </Button>
               <Button 
                 size="lg" 
@@ -210,9 +216,9 @@ export default function Index() {
               description: 'Индивидуальный подход к каждому клиенту',
             },
             {
-              icon: 'TrendingUp',
-              title: 'Выгодные инвестиции',
-              description: 'Помогаем выбрать объекты с высоким потенциалом роста',
+              icon: 'Calendar',
+              title: 'Гибкая аренда',
+              description: 'Посуточно или на длительный срок с выгодными условиями',
             },
           ].map((feature, index) => (
             <Card key={index} className="text-center hover:shadow-lg transition-shadow">
@@ -234,8 +240,8 @@ export default function Index() {
     <div className="space-y-8">
       <div className="bg-gradient-to-r from-primary to-accent text-white py-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">Каталог недвижимости</h1>
-          <p className="text-white/90 text-lg">Найдите идеальный дом в Таиланде</p>
+          <h1 className="text-4xl font-bold mb-4">Аренда вилл</h1>
+          <p className="text-white/90 text-lg">Найдите идеальное жильё для отдыха в Таиланде</p>
         </div>
       </div>
 
@@ -276,28 +282,28 @@ export default function Index() {
 
               <div>
                 <label className="text-sm font-medium mb-3 block">
-                  Ценовой диапазон: ₽{(priceRange[0] / 1000000).toFixed(1)}M - ₽{(priceRange[1] / 1000000).toFixed(1)}M
+                  Цена за сутки: ₽{(priceRange[0] / 1000).toFixed(0)}K - ₽{(priceRange[1] / 1000).toFixed(0)}K
                 </label>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">От (млн ₽)</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">От (тыс ₽)</label>
                     <Input
                       type="number"
                       min="0"
-                      max="50"
-                      value={priceRange[0] / 1000000}
-                      onChange={(e) => setPriceRange([parseFloat(e.target.value) * 1000000, priceRange[1]])}
+                      max="20"
+                      value={priceRange[0] / 1000}
+                      onChange={(e) => setPriceRange([parseFloat(e.target.value) * 1000, priceRange[1]])}
                       className="h-10"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">До (млн ₽)</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">До (тыс ₽)</label>
                     <Input
                       type="number"
                       min="0"
-                      max="50"
-                      value={priceRange[1] / 1000000}
-                      onChange={(e) => setPriceRange([priceRange[0], parseFloat(e.target.value) * 1000000])}
+                      max="20"
+                      value={priceRange[1] / 1000}
+                      onChange={(e) => setPriceRange([priceRange[0], parseFloat(e.target.value) * 1000])}
                       className="h-10"
                     />
                   </div>
@@ -305,13 +311,13 @@ export default function Index() {
               </div>
             </div>
 
-            {(selectedType !== 'Все' || priceRange[0] > 0 || priceRange[1] < 50000000) && (
+            {(selectedType !== 'Все' || priceRange[0] > 0 || priceRange[1] < 20000) && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
                   setSelectedType('Все');
-                  setPriceRange([0, 50000000]);
+                  setPriceRange([0, 20000]);
                 }}
                 className="mt-4 gap-2"
               >
@@ -537,13 +543,13 @@ export default function Index() {
             <div>
               <h3 className="font-bold text-xl mb-4">Thailand Dream</h3>
               <p className="text-white/80">
-                Надёжный партнёр в покупке недвижимости в Таиланде
+                Надёжный партнёр в аренде недвижимости в Таиланде
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Навигация</h4>
               <div className="space-y-2">
-                {['Главная', 'Недвижимость', 'Избранное', 'Контакты'].map((item, index) => (
+                {['Главная', 'Аренда', 'Избранное', 'Контакты'].map((item, index) => (
                   <button
                     key={index}
                     className="block text-white/80 hover:text-white transition-colors"

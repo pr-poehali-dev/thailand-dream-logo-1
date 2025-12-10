@@ -13,7 +13,7 @@ export default function Header({ onNavigate, currentPage, favoritesCount }: Head
 
   const menuItems = [
     { id: 'home', label: 'Главная', icon: 'Home' },
-    { id: 'properties', label: 'Недвижимость', icon: 'Building2' },
+    { id: 'properties', label: 'Аренда', icon: 'Building2' },
     { id: 'favorites', label: 'Избранное', icon: 'Heart', badge: favoritesCount },
     { id: 'contacts', label: 'Контакты', icon: 'Mail' },
   ];
@@ -33,7 +33,7 @@ export default function Header({ onNavigate, currentPage, favoritesCount }: Head
             />
             <div>
               <h1 className="text-xl font-bold text-primary">Thailand Dream</h1>
-              <p className="text-xs text-muted-foreground">Недвижимость в Таиланде</p>
+              <p className="text-xs text-muted-foreground">Аренда вилл в Таиланде</p>
             </div>
           </div>
 
