@@ -97,6 +97,8 @@ export default function Index() {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMapProperty, setSelectedMapProperty] = useState<number | null>(null);
+  const [selectedType, setSelectedType] = useState<string>('Все');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev =>
@@ -104,11 +106,14 @@ export default function Index() {
     );
   };
 
-  const filteredProperties = mockProperties.filter(
-    property =>
-      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProperties = mockProperties.filter(property => {
+    const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = selectedType === 'Все' || property.type === selectedType;
+    const propertyPrice = parseInt(property.price.replace(/[^0-9]/g, ''));
+    const matchesPrice = propertyPrice >= priceRange[0] && propertyPrice <= priceRange[1];
+    return matchesSearch && matchesType && matchesPrice;
+  });
 
   const favoriteProperties = mockProperties.filter(p => favorites.includes(p.id));
 
@@ -220,7 +225,7 @@ export default function Index() {
       </div>
 
       <div className="container mx-auto px-4">
-        <div className="mb-8">
+        <div className="mb-8 space-y-6">
           <div className="relative max-w-xl">
             <Icon name="Search" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -230,6 +235,76 @@ export default function Index() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Icon name="SlidersHorizontal" size={20} />
+              Фильтры
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-sm font-medium mb-3 block">Тип недвижимости</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Все', 'Вилла', 'Квартира', 'Пентхаус', 'Дом', 'Студия'].map((type) => (
+                    <Button
+                      key={type}
+                      variant={selectedType === type ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedType(type)}
+                      className="transition-all"
+                    >
+                      {type}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-3 block">
+                  Ценовой диапазон: ₽{(priceRange[0] / 1000000).toFixed(1)}M - ₽{(priceRange[1] / 1000000).toFixed(1)}M
+                </label>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">От (млн ₽)</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="50"
+                      value={priceRange[0] / 1000000}
+                      onChange={(e) => setPriceRange([parseFloat(e.target.value) * 1000000, priceRange[1]])}
+                      className="h-10"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">До (млн ₽)</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="50"
+                      value={priceRange[1] / 1000000}
+                      onChange={(e) => setPriceRange([priceRange[0], parseFloat(e.target.value) * 1000000])}
+                      className="h-10"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {(selectedType !== 'Все' || priceRange[0] > 0 || priceRange[1] < 50000000) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedType('Все');
+                  setPriceRange([0, 50000000]);
+                }}
+                className="mt-4 gap-2"
+              >
+                <Icon name="X" size={16} />
+                Сбросить фильтры
+              </Button>
+            )}
+          </Card>
         </div>
 
         <div className="mb-12">
