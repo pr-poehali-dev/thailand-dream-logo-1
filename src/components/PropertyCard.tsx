@@ -23,9 +23,10 @@ interface PropertyCardProps {
   property: Property;
   isFavorite: boolean;
   onToggleFavorite: (id: number) => void;
+  onPropertyClick: (property: Property) => void;
 }
 
-export default function PropertyCard({ property, isFavorite, onToggleFavorite }: PropertyCardProps) {
+export default function PropertyCard({ property, isFavorite, onToggleFavorite, onPropertyClick }: PropertyCardProps) {
   return (
     <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300 animate-fade-in">
       <div className="relative overflow-hidden">
@@ -88,9 +89,9 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
               <p className="text-xs text-muted-foreground">{property.pricePerMonth}/месяц</p>
             </div>
           </div>
-          <Button size="sm" className="gap-2">
-            Забронировать
-            <Icon name="Calendar" size={16} />
+          <Button size="sm" className="gap-2" onClick={() => onPropertyClick(property)}>
+            Подробнее
+            <Icon name="ArrowRight" size={16} />
           </Button>
         </div>
       </CardContent>

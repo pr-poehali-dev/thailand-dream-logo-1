@@ -10,31 +10,50 @@ interface InteractiveMapProps {
 }
 
 export default function InteractiveMap({ properties, selectedProperty, onSelectProperty }: InteractiveMapProps) {
+  const locationMap: {[key: string]: {x: number, y: number}} = {
+    'Пхукет': { x: 200, y: 350 },
+    'Бангкок': { x: 500, y: 150 },
+    'Паттайя': { x: 550, y: 220 },
+    'Самуи': { x: 400, y: 380 },
+    'Краби': { x: 250, y: 300 },
+  };
+
   return (
-    <div className="relative w-full h-[500px] bg-secondary/30 rounded-xl overflow-hidden border-2 border-border">
+    <div className="relative w-full h-[500px] bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl overflow-hidden border-2 border-border shadow-lg">
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-full h-full">
           <svg
             viewBox="0 0 800 500"
             className="w-full h-full"
-            style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))' }}
           >
-            <rect width="800" height="500" fill="#D3E4FD" opacity="0.3" />
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0EA5E9" strokeWidth="0.5" opacity="0.1"/>
+              </pattern>
+            </defs>
+            <rect width="800" height="500" fill="url(#grid)" />
             
             <path
-              d="M 150 200 Q 200 150, 250 200 T 350 200 Q 400 220, 450 200 T 550 180 Q 600 160, 650 180"
+              d="M 100 400 Q 150 200, 250 300 T 400 350 Q 500 380, 600 300 T 700 250"
               fill="none"
               stroke="#0EA5E9"
-              strokeWidth="3"
-              opacity="0.6"
+              strokeWidth="2"
+              opacity="0.3"
+              strokeDasharray="5,5"
             />
             
-            <ellipse cx="300" cy="350" rx="80" ry="40" fill="#0EA5E9" opacity="0.2" />
-            <ellipse cx="500" cy="300" rx="60" ry="30" fill="#0EA5E9" opacity="0.2" />
+            <ellipse cx="200" cy="350" rx="60" ry="40" fill="#0EA5E9" opacity="0.15" />
+            <ellipse cx="500" cy="150" rx="70" ry="50" fill="#0EA5E9" opacity="0.15" />
+            <ellipse cx="400" cy="380" rx="50" ry="35" fill="#33C3F0" opacity="0.15" />
 
             {properties.map((property, index) => {
-              const x = 150 + (index % 3) * 250;
-              const y = 180 + Math.floor(index / 3) * 150;
+              const cityKey = Object.keys(locationMap).find(city => 
+                property.location.includes(city)
+              ) || 'Пхукет';
+              const basePos = locationMap[cityKey];
+              const offset = index * 15;
+              const x = basePos.x + (offset % 50);
+              const y = basePos.y + Math.floor(offset / 50) * 15;
               const isSelected = selectedProperty === property.id;
 
               return (
@@ -111,13 +130,23 @@ export default function InteractiveMap({ properties, selectedProperty, onSelectP
         </div>
       </div>
 
-      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-        <div className="flex items-center gap-2 mb-2">
-          <Icon name="MapPin" size={18} className="text-primary" />
-          <span className="font-semibold text-sm">Таиланд</span>
+      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 shadow-lg max-w-xs">
+        <div className="flex items-center gap-2 mb-3">
+          <Icon name="MapPin" size={20} className="text-primary" />
+          <span className="font-bold">Карта локаций</span>
         </div>
-        <Badge variant="secondary" className="text-xs">
-          {properties.length} объектов на карте
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-primary"></div>
+            <span className="text-muted-foreground">Пхукет • Краби • Самуи</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-accent"></div>
+            <span className="text-muted-foreground">Бангкок • Паттайя</span>
+          </div>
+        </div>
+        <Badge variant="secondary" className="text-xs mt-3">
+          {properties.length} объектов
         </Badge>
       </div>
 

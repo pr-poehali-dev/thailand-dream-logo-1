@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import PropertyCard, { Property } from '@/components/PropertyCard';
 import InteractiveMap from '@/components/InteractiveMap';
+import PropertyDetail from '@/components/PropertyDetail';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -104,8 +105,11 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMapProperty, setSelectedMapProperty] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<string>('Все');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000]);
   const [sortOrder, setSortOrder] = useState<'default' | 'price-asc' | 'price-desc'>('default');
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '' });
+  const [reviews, setReviews] = useState<{[key: number]: Array<{name: string, rating: number, comment: string, date: string}>}>({});
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev =>
@@ -137,6 +141,17 @@ export default function Index() {
     });
 
   const favoriteProperties = mockProperties.filter(p => favorites.includes(p.id));
+
+  const handleAddReview = (propertyId: number, review: { name: string; rating: number; comment: string }) => {
+    const newReview = {
+      ...review,
+      date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+    };
+    setReviews(prev => ({
+      ...prev,
+      [propertyId]: [...(prev[propertyId] || []), newReview],
+    }));
+  };
 
   const renderHome = () => (
     <div className="space-y-16">
@@ -197,6 +212,7 @@ export default function Index() {
               property={property}
               isFavorite={favorites.includes(property.id)}
               onToggleFavorite={toggleFavorite}
+              onPropertyClick={setSelectedProperty}
             />
           ))}
         </div>
@@ -282,28 +298,30 @@ export default function Index() {
 
               <div>
                 <label className="text-sm font-medium mb-3 block">
-                  Цена за сутки: ₽{(priceRange[0] / 1000).toFixed(0)}K - ₽{(priceRange[1] / 1000).toFixed(0)}K
+                  Цена за сутки: ₽{(priceRange[0]).toFixed(0)} - ₽{(priceRange[1]).toFixed(0)}
                 </label>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">От (тыс ₽)</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">От (₽)</label>
                     <Input
                       type="number"
                       min="0"
-                      max="20"
-                      value={priceRange[0] / 1000}
-                      onChange={(e) => setPriceRange([parseFloat(e.target.value) * 1000, priceRange[1]])}
+                      max="20000"
+                      step="1000"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([parseFloat(e.target.value), priceRange[1]])}
                       className="h-10"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">До (тыс ₽)</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">До (₽)</label>
                     <Input
                       type="number"
                       min="0"
-                      max="20"
-                      value={priceRange[1] / 1000}
-                      onChange={(e) => setPriceRange([priceRange[0], parseFloat(e.target.value) * 1000])}
+                      max="20000"
+                      step="1000"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseFloat(e.target.value)])}
                       className="h-10"
                     />
                   </div>
@@ -536,6 +554,17 @@ export default function Index() {
         {currentPage === 'favorites' && renderFavorites()}
         {currentPage === 'contacts' && renderContacts()}
       </main>
+
+      {selectedProperty && (
+        <PropertyDetail
+          property={selectedProperty}
+          isFavorite={favorites.includes(selectedProperty.id)}
+          onToggleFavorite={toggleFavorite}
+          onClose={() => setSelectedProperty(null)}
+          reviews={reviews[selectedProperty.id] || []}
+          onAddReview={(review) => handleAddReview(selectedProperty.id, review)}
+        />
+      )}
 
       <footer className="bg-primary text-white py-12">
         <div className="container mx-auto px-4">
