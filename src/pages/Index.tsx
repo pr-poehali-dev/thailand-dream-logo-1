@@ -99,6 +99,7 @@ export default function Index() {
   const [selectedMapProperty, setSelectedMapProperty] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<string>('Все');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
+  const [sortOrder, setSortOrder] = useState<'default' | 'price-asc' | 'price-desc'>('default');
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev =>
@@ -106,14 +107,28 @@ export default function Index() {
     );
   };
 
-  const filteredProperties = mockProperties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = selectedType === 'Все' || property.type === selectedType;
-    const propertyPrice = parseInt(property.price.replace(/[^0-9]/g, ''));
-    const matchesPrice = propertyPrice >= priceRange[0] && propertyPrice <= priceRange[1];
-    return matchesSearch && matchesType && matchesPrice;
-  });
+  const filteredProperties = mockProperties
+    .filter(property => {
+      const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        property.location.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = selectedType === 'Все' || property.type === selectedType;
+      const propertyPrice = parseInt(property.price.replace(/[^0-9]/g, ''));
+      const matchesPrice = propertyPrice >= priceRange[0] && propertyPrice <= priceRange[1];
+      return matchesSearch && matchesType && matchesPrice;
+    })
+    .sort((a, b) => {
+      if (sortOrder === 'price-asc') {
+        const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
+        const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
+        return priceA - priceB;
+      }
+      if (sortOrder === 'price-desc') {
+        const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
+        const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
+        return priceB - priceA;
+      }
+      return 0;
+    });
 
   const favoriteProperties = mockProperties.filter(p => favorites.includes(p.id));
 
@@ -317,9 +332,23 @@ export default function Index() {
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <h2 className="text-2xl font-bold">Все объекты</h2>
-            <Badge variant="secondary">{filteredProperties.length} найдено</Badge>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Icon name="ArrowUpDown" size={18} className="text-muted-foreground" />
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as any)}
+                  className="px-3 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="default">По умолчанию</option>
+                  <option value="price-asc">Цена: по возрастанию</option>
+                  <option value="price-desc">Цена: по убыванию</option>
+                </select>
+              </div>
+              <Badge variant="secondary">{filteredProperties.length} найдено</Badge>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProperties.map(property => (
